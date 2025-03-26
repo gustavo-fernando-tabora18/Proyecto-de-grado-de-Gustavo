@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}Listado de Empleados{% endblock %}
+
+{% block content %}
+<h1>Listado de Empleados</h1>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Empresa</th>
+            <th>Fecha de Contratación</th>
+            <th>Tipo de Contrato</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for empleado in empleados %}
+        <tr>
+            <td>{{ empleado.solicitante.nombre }}</td>
+            <td>{{ empleado.empresa }}</td>
+            <td>{{ empleado.fecha_contratacion }}</td>
+            <td>{{ empleado.get_tipo_contrato_display }}</td>
+            <td>
+                <a href="{% url 'GVS:empleado_update' empleado.pk %}" class="btn btn-warning">Editar</a>
+                <a href="{% url 'GVS:empleado_delete' empleado.pk %}" class="btn btn-danger">Eliminar</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<a href="{% url 'GVS:empleado_create' %}" class="btn btn-primary">Crear Empleado</a>
+{% endblock %}

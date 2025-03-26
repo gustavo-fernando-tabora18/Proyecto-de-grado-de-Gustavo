@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}Eliminar Empresa{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">Eliminar Empresa</h1>
+
+    <!-- Mensaje de confirmación -->
+    <p>¿Estás seguro de que deseas eliminar la empresa "{{ object.nombre }}"?</p>
+
+    <!-- Formulario para eliminar una empresa -->
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+        <a href="{% url 'GVS:empresa_list' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

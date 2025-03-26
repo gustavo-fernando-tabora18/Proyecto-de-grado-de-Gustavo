@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}Listado de Entrevistas{% endblock %}
+
+{% block content %}
+<h1>Listado de Entrevistas</h1>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Asunto</th>
+            <th>Fecha</th>
+            <th>Modalidad</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for entrevista in entrevistas %}
+        <tr>
+            <td>{{ entrevista.asunto }}</td>
+            <td>{{ entrevista.fecha }}</td>
+            <td>{{ entrevista.get_modalidad_display }}</td>
+            <td>{{ entrevista.get_estado_display }}</td>
+            <td>
+                <a href="{% url 'GVS:entrevista_update' entrevista.pk %}" class="btn btn-warning">Editar</a>
+                <a href="{% url 'GVS:entrevista_delete' entrevista.pk %}" class="btn btn-danger">Eliminar</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<a href="{% url 'GVS:entrevista_create' %}" class="btn btn-primary">Crear Entrevista</a>
+{% endblock %}

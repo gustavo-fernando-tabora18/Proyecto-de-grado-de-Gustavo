@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {% if form.instance.pk %}Editar Solicitante{% else %}Crear Solicitante{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">
+        {% if form.instance.pk %}
+            Editar Solicitante
+        {% else %}
+            Crear Solicitante
+        {% endif %}
+    </h1>
+    
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <!-- Campo Vacante con botón para agregar nueva -->
+        <div class="mb-3">
+            <label for="{{ form.vacante.id_for_label }}" class="form-label">Vacante</label>
+            <div class="input-group">
+                {{ form.vacante }}
+                <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#addVacanteModal">
+                    <i class="fas fa-plus"></i> Agregar
+                </button>
+            </div>
+        </div>
+
+        <!-- Resto de campos del formulario -->
+        {% for field in form %}
+            {% if field.name != 'vacante' %}
+                <div class="mb-3">
+                    <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                    {{ field }}
+                </div>
+            {% endif %}
+        {% endfor %}
+
+        <button type="submit" class="btn btn-success">
+            <i class="fas fa-save"></i> Guardar
+        </button>
+        <a href="{% url 'GVS:solicitante_list' %}" class="btn btn-secondary">
+            <i class="fas fa-times"></i> Cancelar
+        </a>
+    </form>
+</div>
+
+<!-- Modal para Añadir Vacante -->
+<div class="modal fade" id="addVacanteModal" tabindex="-1" aria-labelledby="addVacanteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addVacanteModalLabel">Añadir Nueva Vacante</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="vacanteForm" method="post" action="{% url 'GVS:vacante_create' %}">
+                    {% csrf_token %}
+                    {{ vacante_form.as_p }}
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="submit" form="vacanteForm" class="btn btn-primary">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Contenedor para notificaciones Toast -->
+<div id="toastContainer" class="position-fixed bottom-0 end-0 p-3" style="z-index: 1100"></div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    function showToast(message, type = 'success') {
+        const toastContainer = document.getElementById('toastContainer');
+        const toastHTML = `
+            <div class="toast align-items-center text-white bg-${type} border-0" role="alert">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'} me-2"></i>
+                        ${message}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            </div>
+        `;
+        toastContainer.insertAdjacentHTML('beforeend', toastHTML);
+        $('.toast').toast('show');
+    }
+
+    // Función para actualizar el select de vacantes
+    function updateSelect(selectId, newItem) {
+        const select = $(`#${selectId}`);
+        
+        // Verificamos si la opción con ese ID ya existe
+        if (!select.find(`option[value="${newItem.id}"]`).length) {
+            // Creamos la nueva opción
+            const option = new Option(newItem.nombre || newItem.text, newItem.id, true, true);
+            select.append(option).trigger('change');
+            
+            // Si estás usando bootstrap-select, refrescamos
+            if (typeof select.selectpicker === 'function') {
+                select.selectpicker('refresh');
+            }
+        } else {
+            // Si ya existe, solo la seleccionamos
+            select.val(newItem.id).trigger('change');
+        }
+    }
+
+    // Configurar el formulario del modal de Vacante
+    $('#vacanteForm').on('submit', function(e) {
+        e.preventDefault();
+        const form = $(this);
+        const submitBtn = form.find('button[type="submit"]');
+
+        submitBtn.prop('disabled', true).html('Guardando...');
+
+        $.ajax({
+            url: form.attr('action'),
+            method: 'POST',
+            data: form.serialize(),
+            dataType: 'json',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            success: function(data) {
+                if (data.success) {
+                    // Actualiza el select de vacantes con la nueva vacante
+                    updateSelect('id_vacante', data.vacante);
+                    showToast('Vacante creada correctamente');
+
+                    // Cierra el modal y resetea el formulario
+                    $('#addVacanteModal').modal('hide');
+                    form.trigger('reset');
+                } else {
+                    showToast(data.error || 'Error al crear vacante', 'danger');
+                }
+            },
+            error: function(xhr) {
+                showToast('Error de conexión', 'danger');
+            },
+            complete: function() {
+                submitBtn.prop('disabled', false).html('Guardar');
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}Listado de Vacantes{% endblock %}
+
+{% block content %}
+<h1>Listado de Vacantes</h1>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Empresa</th>
+            <th>Número de Vacantes</th>
+            <th>Modalidad</th>
+            <th>Fecha Máxima de Postulación</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for vacante in vacantes %}
+        <tr>
+            <td>{{ vacante.nombre }}</td>
+            <td>{{ vacante.empresa }}</td>
+            <td>{{ vacante.numero_vacantes }}</td>
+            <td>{{ vacante.get_modalidad_display }}</td>
+            <td>{{ vacante.fecha_maxima_postulacion }}</td>
+            <td>
+                <a href="{% url 'GVS:vacante_update' vacante.pk %}" class="btn btn-warning">Editar</a>
+                <a href="{% url 'GVS:vacante_delete' vacante.pk %}" class="btn btn-danger">Eliminar</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<a href="{% url 'GVS:vacante_create' %}" class="btn btn-primary">Crear Vacante</a>
+{% endblock %}

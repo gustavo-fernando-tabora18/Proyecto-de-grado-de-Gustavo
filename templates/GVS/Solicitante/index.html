@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}Listado de Solicitantes{% endblock %}
+
+{% block content %}
+<h1>Listado de Solicitantes</h1>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>DNI</th>
+            <th>Teléfono</th>
+            <th>Correo Electrónico</th>
+            <th>Vacante</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for solicitante in solicitantes %}
+        <tr>
+            <td>{{ solicitante.nombre }}</td>
+            <td>{{ solicitante.dni }}</td>
+            <td>{{ solicitante.telefono }}</td>
+            <td>{{ solicitante.correo_electronico }}</td>
+            <td>{{ solicitante.vacante }}</td>
+            <td>
+                <a href="{% url 'GVS:solicitante_update' solicitante.pk %}" class="btn btn-warning">Editar</a>
+                <a href="{% url 'GVS:solicitante_delete' solicitante.pk %}" class="btn btn-danger">Eliminar</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<a href="{% url 'GVS:solicitante_create' %}" class="btn btn-primary">Crear Solicitante</a>
+{% endblock %}

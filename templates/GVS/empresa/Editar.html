@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}Editar Empresa{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">Editar Empresa</h1>
+
+    <!-- Formulario para editar una empresa -->
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+            {{ form.nombre.label_tag }}
+            {{ form.nombre }}
+            {% if form.nombre.errors %}
+                <div class="text-danger">{{ form.nombre.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="mb-3">
+            {{ form.descripcion.label_tag }}
+            {{ form.descripcion }}
+            {% if form.descripcion.errors %}
+                <div class="text-danger">{{ form.descripcion.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="mb-3">
+            {{ form.direccion.label_tag }}
+            {{ form.direccion }}
+            {% if form.direccion.errors %}
+                <div class="text-danger">{{ form.direccion.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="mb-3">
+            {{ form.telefono.label_tag }}
+            {{ form.telefono }}
+            {% if form.telefono.errors %}
+                <div class="text-danger">{{ form.telefono.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="mb-3">
+            {{ form.correo_electronico.label_tag }}
+            {{ form.correo_electronico }}
+            {% if form.correo_electronico.errors %}
+                <div class="text-danger">{{ form.correo_electronico.errors }}</div>
+            {% endif %}
+        </div>
+        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+        <a href="{% url 'GVS:empresa_list' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

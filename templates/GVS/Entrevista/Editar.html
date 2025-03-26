@@ -1,0 +1,337 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    {{ form.instance.pk|yesno:"Editar,Crear" }} Entrevista
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">{{ form.instance.pk|yesno:"Editar,Crear" }} Entrevista</h1>
+    
+    <form method="post">
+        {% csrf_token %}
+        
+        <!-- Sección 1: Información Básica -->
+        <section class="card mb-4">
+            <header class="card-header bg-primary text-white">
+                Información Básica
+            </header>
+            <div class="card-body">
+                <div class="row">
+                    <!-- Columna Izquierda: Asunto y Fecha -->
+                    <div class="col-md-6">
+                        <!-- Asunto -->
+                        <div class="mb-3">
+                            <label for="{{ form.asunto.id_for_label }}" class="form-label">Asunto</label>
+                            <input type="text" class="form-control {% if form.asunto.errors %}is-invalid{% endif %}"
+                                   id="{{ form.asunto.id_for_label }}" name="{{ form.asunto.name }}"
+                                   value="{{ form.asunto.value|default_if_none:'' }}" required>
+                            {% for error in form.asunto.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        
+                        <!-- Fecha y Hora -->
+                        <div class="mb-3">
+                            <label for="{{ form.fecha.id_for_label }}" class="form-label">Fecha y Hora</label>
+                            <input type="datetime-local" class="form-control {% if form.fecha.errors %}is-invalid{% endif %}"
+                                   id="{{ form.fecha.id_for_label }}" name="{{ form.fecha.name }}"
+                                   value="{{ form.fecha.value|date:'Y-m-d\\TH:i'|default_if_none:'' }}" required>
+                            {% for error in form.fecha.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <!-- Columna Derecha: Modalidad y Estado -->
+                    <div class="col-md-6">
+                        <!-- Modalidad -->
+                        <div class="mb-3">
+                            <label for="{{ form.modalidad.id_for_label }}" class="form-label">Modalidad</label>
+                            <select class="form-select {% if form.modalidad.errors %}is-invalid{% endif %}"
+                                    id="{{ form.modalidad.id_for_label }}" name="{{ form.modalidad.name }}" required>
+                                {% for value, label in form.fields.modalidad.choices %}
+                                    <option value="{{ value }}" {% if form.modalidad.value == value %}selected{% endif %}>
+                                        {{ label }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            {% for error in form.modalidad.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        
+                        <!-- Estado -->
+                        <div class="mb-3">
+                            <label for="{{ form.estado.id_for_label }}" class="form-label">Estado</label>
+                            <select class="form-select {% if form.estado.errors %}is-invalid{% endif %}"
+                                    id="{{ form.estado.id_for_label }}" name="{{ form.estado.name }}" required>
+                                {% for value, label in form.fields.estado.choices %}
+                                    <option value="{{ value }}" {% if form.estado.value == value %}selected{% endif %}>
+                                        {{ label }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            {% for error in form.estado.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Lugar/Enlace -->
+                <div class="mb-3">
+                    <label for="{{ form.lugar.id_for_label }}" class="form-label">Lugar/Enlace</label>
+                    <input type="text" class="form-control {% if form.lugar.errors %}is-invalid{% endif %}"
+                           id="{{ form.lugar.id_for_label }}" name="{{ form.lugar.name }}"
+                           value="{{ form.lugar.value|default_if_none:'' }}" required>
+                    {% for error in form.lugar.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Descripción -->
+                <div class="mb-3">
+                    <label for="{{ form.descripcion.id_for_label }}" class="form-label">Descripción</label>
+                    <textarea class="form-control {% if form.descripcion.errors %}is-invalid{% endif %}"
+                              id="{{ form.descripcion.id_for_label }}" name="{{ form.descripcion.name }}" rows="3">
+                        {{ form.descripcion.value|default_if_none:'' }}
+                    </textarea>
+                    {% for error in form.descripcion.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+        
+        <!-- Sección 2: Participantes -->
+        <section class="card mb-4">
+            <header class="card-header bg-primary text-white">
+                Participantes
+            </header>
+            <div class="card-body">
+                <div class="row">
+                    <!-- Entrevistador -->
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label for="{{ form.entrevistador.id_for_label }}" class="form-label">Entrevistador</label>
+                            <div class="input-group">
+                                <select class="form-select {% if form.entrevistador.errors %}is-invalid{% endif %}"
+                                        id="{{ form.entrevistador.id_for_label }}" name="{{ form.entrevistador.name }}" required>
+                                    {% for value, label in form.fields.entrevistador.choices %}
+                                        <option value="{{ value }}" {% if form.entrevistador.value == value %}selected{% endif %}>
+                                            {{ label }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal"
+                                        data-bs-target="#addEntrevistadorModal">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                            {% for error in form.entrevistador.errors %}
+                                <div class="invalid-feedback d-block">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <!-- Vacante -->
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label for="{{ form.vacante.id_for_label }}" class="form-label">Vacante</label>
+                            <div class="input-group">
+                                <select class="form-select {% if form.vacante.errors %}is-invalid{% endif %}"
+                                        id="{{ form.vacante.id_for_label }}" name="{{ form.vacante.name }}" required>
+                                    {% for value, label in form.fields.vacante.choices %}
+                                        <option value="{{ value }}" {% if form.vacante.value == value %}selected{% endif %}>
+                                            {{ label }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal"
+                                        data-bs-target="#addVacanteModal">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                            {% for error in form.vacante.errors %}
+                                <div class="invalid-feedback d-block">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <!-- Solicitante -->
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label for="{{ form.solicitante.id_for_label }}" class="form-label">Solicitante</label>
+                            <div class="input-group">
+                                <select class="form-select {% if form.solicitante.errors %}is-invalid{% endif %}"
+                                        id="{{ form.solicitante.id_for_label }}" name="{{ form.solicitante.name }}" required>
+                                    {% for value, label in form.fields.solicitante.choices %}
+                                        <option value="{{ value }}" {% if form.solicitante.value == value %}selected{% endif %}>
+                                            {{ label }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal"
+                                        data-bs-target="#addSolicitanteModal">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                            {% for error in form.solicitante.errors %}
+                                <div class="invalid-feedback d-block">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Botones de acción -->
+        <div class="d-flex justify-content-between mt-4">
+            <a href="{% url 'GVS:entrevista_list' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-2"></i> Volver al listado
+            </a>
+            <button type="submit" class="btn btn-success">
+                <i class="fas fa-save me-2"></i> {% if form.instance.pk %}Actualizar{% else %}Crear{% endif %} Entrevista
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Modal para Añadir Entrevistador -->
+<div class="modal fade" id="addEntrevistadorModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Añadir Nuevo Entrevistador</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="entrevistadorForm" method="post" action="{% url 'GVS:entrevistador_create' %}">
+                    {% csrf_token %}
+                    {{ entrevistador_form.as_p }}
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="submit" form="entrevistadorForm" class="btn btn-primary">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Añadir Vacante -->
+<div class="modal fade" id="addVacanteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Añadir Nueva Vacante</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="vacanteForm" method="post" action="{% url 'GVS:vacante_create' %}">
+                    {% csrf_token %}
+                    {{ vacante_form.as_p }}
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="submit" form="vacanteForm" class="btn btn-primary">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Añadir Solicitante -->
+<div class="modal fade" id="addSolicitanteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Añadir Nuevo Solicitante</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="solicitanteForm" method="post" action="{% url 'GVS:solicitante_create' %}">
+                    {% csrf_token %}
+                    {{ solicitante_form.as_p }}
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="submit" form="solicitanteForm" class="btn btn-primary">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    /**
+     * Función para actualizar un <select> añadiendo la opción recibida (si no existe) y seleccionándola.
+     */
+    function updateSelect(selectId, newItem) {
+        var select = document.getElementById(selectId);
+        if (!select.querySelector(`option[value="${newItem.id}"]`)) {
+            var option = new Option(newItem.nombre || newItem.titulo || newItem.asunto, newItem.id, true, true);
+            select.add(option);
+            select.dispatchEvent(new Event('change'));
+        } else {
+            select.value = newItem.id;
+        }
+    }
+
+    /**
+     * Maneja el envío de formularios en modales mediante fetch.
+     * formSelector: selector del formulario (por ejemplo, '#entrevistadorForm')
+     * selectId: ID del <select> a actualizar (por ejemplo, 'id_entrevistador')
+     * modalSelector: selector del modal a cerrar (por ejemplo, '#addEntrevistadorModal')
+     */
+    function handleFormSubmission(formSelector, selectId, modalSelector) {
+        var form = document.querySelector(formSelector);
+        if (!form) return;
+        
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            var formData = new FormData(form);
+            
+            fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                }
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Error en la respuesta');
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    updateSelect(selectId, data.entrevistador || data.vacante || data.solicitante);
+                    var modalEl = document.querySelector(modalSelector);
+                    var modal = bootstrap.Modal.getInstance(modalEl);
+                    modal.hide();
+                    form.reset();
+                    alert('Registro creado exitosamente');
+                } else {
+                    alert(data.error || 'Error al crear el registro');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Ocurrió un error en la solicitud');
+            });
+        });
+    }
+
+    // Configurar envío de formularios de cada modal
+    handleFormSubmission('#entrevistadorForm', 'id_entrevistador', '#addEntrevistadorModal');
+    handleFormSubmission('#vacanteForm', 'id_vacante', '#addVacanteModal');
+    handleFormSubmission('#solicitanteForm', 'id_solicitante', '#addSolicitanteModal');
+});
+</script>
+{% endblock %}

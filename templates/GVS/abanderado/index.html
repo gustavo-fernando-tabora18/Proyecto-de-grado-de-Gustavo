@@ -1,0 +1,64 @@
+{% extends 'base.html' %}  <!-- Hereda del template base -->
+
+{% block title %}Listado de Abanderados{% endblock %}  <!-- Título específico para esta página -->
+
+{% block content %}  <!-- Contenido principal -->
+<div class="container">
+    <h1 class="mb-4">Listado de Abanderados</h1>
+
+    <!-- Botón para crear un nuevo abanderado -->
+    <a href="{% url 'GVS:abanderado_create' %}" class="btn btn-success mb-3">
+        <i class="fas fa-plus"></i> Crear Nuevo Abanderado
+    </a>
+
+    <!-- Tabla para listar abanderados -->
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>#</th>  <!-- Columna para el número de fila -->
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for abanderado in abanderados %}
+            <tr>
+                <td>{{ forloop.counter }}</td>  <!-- Número de fila -->
+                <td>{{ abanderado.nombre }}</td>
+                <td>{{ abanderado.descripcion|truncatechars:50 }}</td>  <!-- Muestra solo los primeros 50 caracteres -->
+                <td>
+                    <!-- Botones de acciones -->
+                    <a href="{% url 'GVS:abanderado_update' abanderado.pk %}" class="btn btn-primary btn-sm">
+                        <i class="fas fa-edit"></i> Editar
+                    </a>
+                    <a href="{% url 'GVS:abanderado_delete' abanderado.pk %}" class="btn btn-danger btn-sm">
+                        <i class="fas fa-trash"></i> Eliminar
+                    </a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" class="text-center">No hay abanderados registrados.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<!-- Estilos adicionales para esta página -->
+<style>
+    .btn-sm {
+        margin-right: 5px;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Scripts adicionales para esta página -->
+<script>
+    console.log("Página de listado de abanderados cargada.");
+</script>
+{% endblock %}

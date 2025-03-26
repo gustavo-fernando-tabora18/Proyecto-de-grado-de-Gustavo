@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Eliminar Estación{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">Eliminar Estación</h1>
+
+    <p>¿Estás seguro de que deseas eliminar la estación <strong>{{ estacion.nombre }}</strong>?</p>
+
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">
+            <i class="fas fa-trash"></i> Sí, Eliminar
+        </button>
+        <a href="{% url 'GVS:estacion_list' %}" class="btn btn-secondary">
+            <i class="fas fa-times"></i> Cancelar
+        </a>
+    </form>
+</div>
+{% endblock %}

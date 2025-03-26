@@ -1,0 +1,66 @@
+{% extends 'base.html' %}  <!-- Hereda del template base -->
+
+{% block title %}Listado de Empresas{% endblock %}  <!-- Título específico para esta página -->
+
+{% block content %}  <!-- Contenido principal -->
+<div class="container">
+    <h1 class="mb-4">Listado de Empresas</h1>
+
+    <!-- Botón para crear una nueva empresa -->
+    <a href="{% url 'GVS:empresa_create' %}" class="btn btn-success mb-3">
+        <i class="fas fa-plus"></i> Crear Nueva Empresa
+    </a>
+
+    <!-- Tabla para listar empresas -->
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>#</th>  <!-- Columna para el número de fila -->
+                <th>Nombre</th>
+                <th>Teléfono</th>
+                <th>Email</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for empresa in empresas %}
+            <tr>
+                <td>{{ forloop.counter }}</td>  <!-- Número de fila -->
+                <td>{{ empresa.nombre }}</td>
+                <td>{{ empresa.telefono }}</td>
+                <td>{{ empresa.correo_electronico }}</td>
+                <td>
+                    <!-- Botones de acciones -->
+                    <a href="{% url 'GVS:empresa_update' empresa.pk %}" class="btn btn-primary btn-sm">
+                        <i class="fas fa-edit"></i> Editar
+                    </a>
+                    <a href="{% url 'GVS:empresa_delete' empresa.pk %}" class="btn btn-danger btn-sm">
+                        <i class="fas fa-trash"></i> Eliminar
+                    </a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="text-center">No hay empresas registradas.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<!-- Estilos adicionales para esta página -->
+<style>
+    .btn-sm {
+        margin-right: 5px;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Scripts adicionales para esta página -->
+<script>
+    console.log("Página de listado de empresas cargada.");
+</script>
+{% endblock %}

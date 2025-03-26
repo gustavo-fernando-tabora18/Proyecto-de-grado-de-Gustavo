@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+
+{% block title %}Editar Estación{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">Editar Estación</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="{{ form.empresa.id_for_label }}" class="form-label">Empresa</label>
+            <div class="input-group">
+                {{ form.empresa }}
+                <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#addEmpresaModal">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="{{ form.abanderado.id_for_label }}" class="form-label">Abanderado</label>
+            <div class="input-group">
+                {{ form.abanderado }}
+                <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#addAbanderadoModal">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Resto de los campos del formulario de Estacion -->
+        <div class="mb-3">
+            <label for="{{ form.nombre.id_for_label }}" class="form-label">Nombre</label>
+            {{ form.nombre }}
+        </div>
+        <div class="mb-3">
+            <label for="{{ form.ubicacion.id_for_label }}" class="form-label">Ubicación</label>
+            {{ form.ubicacion }}
+        </div>
+        <div class="mb-3">
+            <label for="{{ form.correo_electronico.id_for_label }}" class="form-label">Correo Electrónico</label>
+            {{ form.correo_electronico }}
+        </div>
+        <div class="mb-3">
+            <label for="{{ form.telefono.id_for_label }}" class="form-label">Teléfono</label>
+            {{ form.telefono }}
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+            <i class="fas fa-save"></i> Guardar Cambios
+        </button>
+        <a href="{% url 'GVS:estacion_list' %}" class="btn btn-secondary">
+            <i class="fas fa-times"></i> Cancelar
+        </a>
+    </form>
+</div>
+
+<!-- Modal para Añadir Empresa -->
+<div class="modal fade" id="addEmpresaModal" tabindex="-1" aria-labelledby="addEmpresaModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addEmpresaModalLabel">Añadir Nueva Empresa</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Formulario para crear una nueva empresa -->
+                <form id="empresaForm" method="post" action="{% url 'GVS:empresa_create' %}">
+                    {% csrf_token %}
+                    {{ empresa_form.as_p }}  <!-- Aquí se renderiza el formulario de Empresa -->
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="submit" form="empresaForm" class="btn btn-primary">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Añadir Abanderado -->
+<div class="modal fade" id="addAbanderadoModal" tabindex="-1" aria-labelledby="addAbanderadoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addAbanderadoModalLabel">Añadir Nuevo Abanderado</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Formulario para crear un nuevo abanderado -->
+                <form id="abanderadoForm" method="post" action="{% url 'GVS:abanderado_create' %}">
+                    {% csrf_token %}
+                    {{ abanderado_form.as_p }}  <!-- Aquí se renderiza el formulario de Abanderado -->
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="submit" form="abanderadoForm" class="btn btn-primary">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Función para actualizar la lista de opciones en un campo de selección
+    function updateSelectOptions(selectId, newOption) {
+        const select = document.getElementById(selectId);
+        const option = document.createElement('option');
+        option.value = newOption.id;
+        option.text = newOption.nombre;
+        option.selected = true;
+        select.add(option);
+    }
+
+    // Manejar el envío del formulario de Empresa
+    document.getElementById('empresaForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        fetch(this.action, {
+            method: 'POST',
+            body: new FormData(this),
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                updateSelectOptions('id_empresa', data.empresa);
+                $('#addEmpresaModal').modal('hide');
+            }
+        });
+    });
+
+    // Manejar el envío del formulario de Abanderado
+    document.getElementById('abanderadoForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        fetch(this.action, {
+            method: 'POST',
+            body: new FormData(this),
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                updateSelectOptions('id_abanderado', data.abanderado);
+                $('#addAbanderadoModal').modal('hide');
+            }
+        });
+    });
+</script>
+{% endblock %}
