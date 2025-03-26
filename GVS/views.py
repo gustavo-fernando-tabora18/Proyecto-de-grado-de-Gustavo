@@ -14,9 +14,28 @@ from .mixins import SuccessMessageMixin, DeleteMessageMixin  # Importar los mixi
 from django.utils.translation import gettext as _
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.serializers.json import DjangoJSONEncoder
+from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.forms import AuthenticationForm
 
-def index(request):
-    return render(request, 'base.html')
+def home(request):
+    if request.user.is_authenticated:
+        return render(request, 'base.html')
+
+def login_view(request):
+    if request.user.is_authenticated:
+        return redirect('GVS:home')  # Redirige si ya está autenticado
+    
+    if request.method == 'POST':
+        form = AuthenticationForm(data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            return redirect('GVS:home')  # Redirige al usuario autenticado
+    else:
+        form = AuthenticationForm()
+
+    return render(request, 'login.html', {'form': form})
 
 # EMPRESA
 class EmpresaListView(ListView):

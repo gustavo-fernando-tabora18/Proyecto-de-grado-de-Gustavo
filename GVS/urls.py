@@ -1,9 +1,15 @@
 from django.urls import path
+from django.contrib.auth.views import LogoutView
 from . import views  # Espacio después del punto
 
 app_name = 'GVS'
 
 urlpatterns = [
+    # Index
+    path('', views.home, name='home'),
+    path('login/', views.login_view, name='login'),
+    path('logout/', LogoutView.as_view(), name='logout'),
+    
     # Empresas
     path('empresa/', views.EmpresaListView.as_view(), name='empresa_list'),
     path('empresa/Crear/', views.EmpresaCreateView.as_view(), name='empresa_create'),
@@ -54,10 +60,4 @@ urlpatterns = [
     path('informe/Crear/', views.InformeCreateView.as_view(), name='informe_create'),
     path('informe/Editar/<int:pk>/', views.InformeUpdateView.as_view(), name='informe_update'),
     path('informe/Eliminar/<int:pk>/', views.InformeDeleteView.as_view(), name='informe_delete'),
-
-
-    
-
-    # Index
-    path('', views.index, name='index_base'),
 ] 

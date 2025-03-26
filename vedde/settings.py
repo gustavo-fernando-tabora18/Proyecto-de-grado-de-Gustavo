@@ -30,6 +30,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.locale.LocaleMiddleware',  # Internacionalización
+    'GVS.middleware.LoginRequiredMiddleware', 
 ]
 
 ROOT_URLCONF = 'vedde.urls'
@@ -119,7 +120,9 @@ if not DEBUG:
     SECURE_BROWSER_XSS_FILTER = True
     X_FRAME_OPTIONS = 'DENY'
 
-
+LOGIN_URL = '/login/'  # URL de la página de inicio de sesión
+LOGIN_REDIRECT_URL = '/'  # Redirigir después del login
+LOGOUT_REDIRECT_URL = '/login/'  # Redirigir después del logout
 
 # Tamaños máximos para archivos (en bytes)
 MAX_UPLOAD_SIZE = 5242880  # 5MB
